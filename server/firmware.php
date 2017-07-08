@@ -12,7 +12,7 @@
     $json = json_decode($result);
     $latestTag = $json->tag_name;
     $currentTag = $_GET["tag"];
-    if ($latestTag != $currentTag) {
+    if (version_compare($currentTag, $latestTag) < 0) {
         $binPath = $json->assets[0]->browser_download_url;
         // the file you want to send
         $ch = curl_init();
@@ -25,7 +25,7 @@
 
         // Set header for binary
         header('Content-type: application/octet-stream');
-        header('Content-disposition: attachment; filename="firmware.bin"');
+        header('Content-disposition: attachment; filename="WordClock.ino.nodemcu.bin"');
         header('Content-Transfer-Encoding: binary');
         header("Content-Length: ".strlen($out));
 
