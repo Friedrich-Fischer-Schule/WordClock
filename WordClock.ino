@@ -6,6 +6,7 @@
 #include <WiFiManager.h>         //https://github.com/tzapu/WiFiManager
 #include <ArduinoOTA.h>
 
+String buildTag = "v0.1.0";
 
 void setup() {
   // put your setup code here, to run once:
@@ -21,7 +22,7 @@ void setup() {
   //if it does not connect it starts an access point with the specified name
   //here  "WortuhrAP"
   //and goes into a blocking loop awaiting configuration
-  wifiManager.autoConnect("WortuhrAP", "12345678");
+  wifiManager.autoConnect("WordClockAP", "1234WordClock5678");
 
   //if you get here you have connected to the WiFi
   Serial.println("connected...yeey :)");
