@@ -6,6 +6,7 @@
 #include <ESP8266WiFi.h>          //https://github.com/esp8266/Arduino
 #include <ArduinoJson.h>          //https://github.com/bblanchon/ArduinoJson
 //needed for library
+#include <ESP8266WebServer.h>
 #include <DNSServer.h>
 #include <ESP8266WebServer.h>
 #include <WiFiManager.h>         //https://github.com/tzapu/WiFiManager
@@ -16,6 +17,7 @@
 char static_ip[16] = "10.0.1.56";
 char static_gw[16] = "10.0.1.1";
 char static_sn[16] = "255.255.255.0";
+bool useDHCP = true;
 
 //flag for saving data
 bool shouldSaveConfig = false;
@@ -60,6 +62,10 @@ void setup() {
         if (json.success()) {
           DBG_OUTPUT.println("\nparsed json");
 
+          if (json.containsKey("useDHCP")) {
+            useDHCP = json["useDHCP"];
+          }
+          
           if(json["ip"]) {
             DBG_OUTPUT.println("setting custom ip from config");
             //static_ip = json["ip"];
@@ -94,7 +100,22 @@ void setup() {
   _gw.fromString(static_gw);
   _sn.fromString(static_sn);
 
-  wifiManager.setSTAStaticIPConfig(_ip, _gw, _sn);
+  // DHCP or not - bool parameter visualized using checkbox, so couple of things to note
+  // - value is always 'T' for true. When the HTML form is submitted this is the value that will be 
+  //   sent as a parameter. When unchecked, nothing will be sent by the HTML standard.
+  // - customhtml must be 'type="checkbox"' for obvious reasons. When the default is checked
+  //   append 'checked' too
+  // - labelplacement parameter is WFM_LABEL_AFTER for checkboxes as label has to be placed after the input field
+
+  char customhtml[24] = "type=\"checkbox\"";
+  if (useDHCP) {
+    strcat(customhtml, " checked");
+  }
+  WiFiManagerParameter p_useDHCP("useDHCP", "DHCP", "T", 2, customhtml);
+  wifiManager.addParameter(&p_useDHCP);
+
+//  if (static_ip != "")
+    wifiManager.setSTAStaticIPConfig(_ip, _gw, _sn);
 
   //reset saved settings
   //wifiManager.resetSettings();
@@ -117,7 +138,9 @@ void setup() {
     json["ip"] = WiFi.localIP().toString();
     json["gateway"] = WiFi.gatewayIP().toString();
     json["subnet"] = WiFi.subnetMask().toString();
-
+    useDHCP = (strncmp(p_useDHCP.getValue(), "T", 1) == 0);
+    json["useDHCP"] = useDHCP;
+    
     File configFile = SPIFFS.open("/config.json", "w");
     if (!configFile) {
       DBG_OUTPUT.println("failed to open config file for writing");
