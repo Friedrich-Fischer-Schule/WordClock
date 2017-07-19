@@ -62,12 +62,7 @@ bool writeConfigFile() {
   json["ip"] = WiFi.localIP().toString();
   json["gateway"] = WiFi.gatewayIP().toString();
   json["subnet"] = WiFi.subnetMask().toString();
-  char customhtml[24] = "type=\"checkbox\"";
-  if (useDHCP) {
-    strcat(customhtml, " checked");
-  }
-  WiFiManagerParameter p_useDHCP("useDHCP", "DHCP", "T", 2, customhtml);
-  useDHCP = (strncmp(p_useDHCP.getValue(), "T", 1) == 0);
+
   json["useDHCP"] = useDHCP;
 
   // Open file for writing
@@ -87,6 +82,9 @@ bool writeConfigFile() {
 }
 
 void FS_setup() {
+
+  SPIFFS.begin();
+  
   //clean FS, for testing
   //SPIFFS.format();
 

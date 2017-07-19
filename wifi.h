@@ -1,16 +1,27 @@
 // Indicates whether ESP has WiFi credentials saved from previous session
 bool initialConfig = false;
+char customhtml[24] = "type=\"checkbox\"";
 
 void WIFI_setup() {
 
   //Remove this line if you do not want to see WiFi password printed
-  WiFi.printDiag(DBG_OUTPUT);
+  //WiFi.printDiag(DBG_OUTPUT);
 
   if (WiFi.SSID() == "") {
     DBG_OUTPUT.println("We haven't got any access point credentials, so get them now");
     initialConfig = true;
   } else {
     WiFi.mode(WIFI_STA); // Force to station mode because if device was switched off while in access point mode it will start up next time in access point mode.
+
+    if (useDHCP) {
+      strcat(customhtml, " checked");
+    } else {    //set static ip
+      IPAddress _ip, _gw, _sn;
+      _ip.fromString(static_ip);
+      _gw.fromString(static_gw);
+      _sn.fromString(static_sn);
+      WiFi.config(_ip, _gw, _sn);
+    }
     unsigned long startedAt = millis();
     DBG_OUTPUT.print("After waiting ");
     int connRes = WiFi.waitForConnectResult();
@@ -26,11 +37,13 @@ void WIFI_setup() {
     DBG_OUTPUT.print("Local ip: ");
     DBG_OUTPUT.println(WiFi.localIP());
   }
+
+  pinMode(TRIGGER_PIN, INPUT_PULLUP);
 }
 
 void check_for_config_portal_request() {
   // is configuration portal requested?
-  if (initialConfig) {
+  if ((digitalRead(TRIGGER_PIN) == LOW) || initialConfig) {
     DBG_OUTPUT.println("Configuration portal requested");
     //Local intialization. Once its business is done, there is no need to keep it around
 
@@ -82,6 +95,8 @@ void check_for_config_portal_request() {
       // If you get here you have connected to the WiFi
       DBG_OUTPUT.println("Connected...yeey :)");
     }
+
+    useDHCP = (strncmp(p_useDHCP.getValue(), "T", 1) == 0);
 
     // Writing JSON config file to flash for next boot
     writeConfigFile();
