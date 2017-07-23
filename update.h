@@ -41,6 +41,7 @@ void check_for_updates() {
     if ((WiFi.status() == WL_CONNECTED)) {
 
       DBG_OUTPUT.println("Checking for Update. Current version: " SKETCH_VERSION);
+      icon_update();
       t_httpUpdate_return ret = ESPhttpUpdate.update("http://www.friedmann-elektronik.de/Arduino/WordClock/firmware.php?tag=" SKETCH_VERSION);
 
       switch (ret) {

@@ -33,9 +33,14 @@ void WIFI_setup() {
 
   if (WiFi.status() != WL_CONNECTED) {
     DBG_OUTPUT.println("Failed to connect, finishing setup anyway");
+    smiley_NOK();
+    delay(5000);
+    // TODO: start wifi in AP mode here and use internal RTC set over webinterface
   } else {
     DBG_OUTPUT.print("Local ip: ");
     DBG_OUTPUT.println(WiFi.localIP());
+    smiley_OK();
+    delay(5000);
   }
 
   pinMode(TRIGGER_PIN, INPUT_PULLUP);

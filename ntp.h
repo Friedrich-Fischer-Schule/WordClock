@@ -1,6 +1,8 @@
 #include <TimeLib.h>
 #include <WiFiUdp.h>
 
+int lastMinute;
+
 // NTP Servers:
 static const char ntpServerName[] = "us.pool.ntp.org";
 //static const char ntpServerName[] = "time.nist.gov";
