@@ -114,19 +114,19 @@ void KNIGHT() {
 
   for (int i = 0; i < 11; i++) {
     for (int z = 0; z < 10; z++)
-      strip.setPixelColor(i + z * 11, strip.Color( R, G, B));
+      strip.setPixelColor(i + z * 11, strip.Color( colorR, colorG, colorB));
 
     t = i ;
     if (t < 0) t = strip.numPixels() - 1;
     for (int z = 0; z < 10; z++)
-      strip.setPixelColor(t + z * 11, strip.Color( R, G, B));
+      strip.setPixelColor(t + z * 11, strip.Color( colorR, colorG, colorB));
 
     strip.show();
     delay(50);
   }
   for (int i = 10; i >= 0; i--) {
     for (int z = 0; z < 10; z++)
-      strip.setPixelColor(i + z * 11, strip.Color( R, G, B));
+      strip.setPixelColor(i + z * 11, strip.Color( colorR, colorG, colorB));
     t = i;
     if (t >= strip.numPixels()) t = 0;
     for (int z = 0; z < 10; z++)
@@ -145,209 +145,209 @@ void printDigits(int digits) {
 }
 
 void es() {
-  strip.setPixelColor(108, R, G, B);
-  strip.setPixelColor(109, R, G, B);
+  strip.setPixelColor(108, colorR, colorG, colorB);
+  strip.setPixelColor(109, colorR, colorG, colorB);
 }
 
 void ist() {
-  strip.setPixelColor(104, R, G, B);
-  strip.setPixelColor(105, R, G, B);
-  strip.setPixelColor(106, R, G, B);
+  strip.setPixelColor(104, colorR, colorG, colorB);
+  strip.setPixelColor(105, colorR, colorG, colorB);
+  strip.setPixelColor(106, colorR, colorG, colorB);
 }
 
 void funf() {
-  strip.setPixelColor(99, R, G, B);
-  strip.setPixelColor(100, R, G, B);
-  strip.setPixelColor(101, R, G, B);
-  strip.setPixelColor(102, R, G, B);
+  strip.setPixelColor(99, colorR, colorG, colorB);
+  strip.setPixelColor(100, colorR, colorG, colorB);
+  strip.setPixelColor(101, colorR, colorG, colorB);
+  strip.setPixelColor(102, colorR, colorG, colorB);
 }
 
 void zehn() {
-  strip.setPixelColor(88, R, G, B);
-  strip.setPixelColor(89, R, G, B);
-  strip.setPixelColor(90, R, G, B);
-  strip.setPixelColor(91, R, G, B);
+  strip.setPixelColor(88, colorR, colorG, colorB);
+  strip.setPixelColor(89, colorR, colorG, colorB);
+  strip.setPixelColor(90, colorR, colorG, colorB);
+  strip.setPixelColor(91, colorR, colorG, colorB);
 }
 
 void zwanzig() {
-  strip.setPixelColor(92, R, G, B);
-  strip.setPixelColor(93, R, G, B);
-  strip.setPixelColor(94, R, G, B);
-  strip.setPixelColor(95, R, G, B);
-  strip.setPixelColor(96, R, G, B);
-  strip.setPixelColor(97, R, G, B);
-  strip.setPixelColor(98, R, G, B);
+  strip.setPixelColor(92, colorR, colorG, colorB);
+  strip.setPixelColor(93, colorR, colorG, colorB);
+  strip.setPixelColor(94, colorR, colorG, colorB);
+  strip.setPixelColor(95, colorR, colorG, colorB);
+  strip.setPixelColor(96, colorR, colorG, colorB);
+  strip.setPixelColor(97, colorR, colorG, colorB);
+  strip.setPixelColor(98, colorR, colorG, colorB);
 }
 
 void viertel() {
-  strip.setPixelColor(77, R, G, B);
-  strip.setPixelColor(78, R, G, B);
-  strip.setPixelColor(79, R, G, B);
-  strip.setPixelColor(80, R, G, B);
-  strip.setPixelColor(81, R, G, B);
-  strip.setPixelColor(82, R, G, B);
-  strip.setPixelColor(83, R, G, B);
+  strip.setPixelColor(77, colorR, colorG, colorB);
+  strip.setPixelColor(78, colorR, colorG, colorB);
+  strip.setPixelColor(79, colorR, colorG, colorB);
+  strip.setPixelColor(80, colorR, colorG, colorB);
+  strip.setPixelColor(81, colorR, colorG, colorB);
+  strip.setPixelColor(82, colorR, colorG, colorB);
+  strip.setPixelColor(83, colorR, colorG, colorB);
 }
 
 void dreiviertel() {
-  strip.setPixelColor(77, R, G, B);
-  strip.setPixelColor(78, R, G, B);
-  strip.setPixelColor(79, R, G, B);
-  strip.setPixelColor(80, R, G, B);
-  strip.setPixelColor(81, R, G, B);
-  strip.setPixelColor(82, R, G, B);
-  strip.setPixelColor(83, R, G, B);
-  strip.setPixelColor(84, R, G, B);
-  strip.setPixelColor(85, R, G, B);
-  strip.setPixelColor(86, R, G, B);
-  strip.setPixelColor(87, R, G, B);
+  strip.setPixelColor(77, colorR, colorG, colorB);
+  strip.setPixelColor(78, colorR, colorG, colorB);
+  strip.setPixelColor(79, colorR, colorG, colorB);
+  strip.setPixelColor(80, colorR, colorG, colorB);
+  strip.setPixelColor(81, colorR, colorG, colorB);
+  strip.setPixelColor(82, colorR, colorG, colorB);
+  strip.setPixelColor(83, colorR, colorG, colorB);
+  strip.setPixelColor(84, colorR, colorG, colorB);
+  strip.setPixelColor(85, colorR, colorG, colorB);
+  strip.setPixelColor(86, colorR, colorG, colorB);
+  strip.setPixelColor(87, colorR, colorG, colorB);
 }
 
 void vor() {
-  strip.setPixelColor(66, R, G, B);
-  strip.setPixelColor(67, R, G, B);
-  strip.setPixelColor(68, R, G, B);
+  strip.setPixelColor(66, colorR, colorG, colorB);
+  strip.setPixelColor(67, colorR, colorG, colorB);
+  strip.setPixelColor(68, colorR, colorG, colorB);
 }
 
 void und() {
-  strip.setPixelColor(70, R, G, B);
-  strip.setPixelColor(71, R, G, B);
-  strip.setPixelColor(72, R, G, B);
+  strip.setPixelColor(70, colorR, colorG, colorB);
+  strip.setPixelColor(71, colorR, colorG, colorB);
+  strip.setPixelColor(72, colorR, colorG, colorB);
 }
 
 void nach() {
-  strip.setPixelColor(73, R, G, B);
-  strip.setPixelColor(74, R, G, B);
-  strip.setPixelColor(75, R, G, B);
-  strip.setPixelColor(76, R, G, B);
+  strip.setPixelColor(73, colorR, colorG, colorB);
+  strip.setPixelColor(74, colorR, colorG, colorB);
+  strip.setPixelColor(75, colorR, colorG, colorB);
+  strip.setPixelColor(76, colorR, colorG, colorB);
 }
 
 void halb() {
-  strip.setPixelColor(62, R, G, B);
-  strip.setPixelColor(63, R, G, B);
-  strip.setPixelColor(64, R, G, B);
-  strip.setPixelColor(65, R, G, B);
+  strip.setPixelColor(62, colorR, colorG, colorB);
+  strip.setPixelColor(63, colorR, colorG, colorB);
+  strip.setPixelColor(64, colorR, colorG, colorB);
+  strip.setPixelColor(65, colorR, colorG, colorB);
 }
 
 void elf() {
-  strip.setPixelColor(58, R, G, B);
-  strip.setPixelColor(59, R, G, B);
-  strip.setPixelColor(60, R, G, B);
+  strip.setPixelColor(58, colorR, colorG, colorB);
+  strip.setPixelColor(59, colorR, colorG, colorB);
+  strip.setPixelColor(60, colorR, colorG, colorB);
 }
 
 void funf2() {
-  strip.setPixelColor(55, R, G, B);
-  strip.setPixelColor(56, R, G, B);
-  strip.setPixelColor(57, R, G, B);
-  strip.setPixelColor(58, R, G, B);
+  strip.setPixelColor(55, colorR, colorG, colorB);
+  strip.setPixelColor(56, colorR, colorG, colorB);
+  strip.setPixelColor(57, colorR, colorG, colorB);
+  strip.setPixelColor(58, colorR, colorG, colorB);
 }
 
 void eins() {
-  strip.setPixelColor(44, R, G, B);
-  strip.setPixelColor(45, R, G, B);
-  strip.setPixelColor(46, R, G, B);
-  strip.setPixelColor(47, R, G, B);
+  strip.setPixelColor(44, colorR, colorG, colorB);
+  strip.setPixelColor(45, colorR, colorG, colorB);
+  strip.setPixelColor(46, colorR, colorG, colorB);
+  strip.setPixelColor(47, colorR, colorG, colorB);
 }
 void ein() {
-  strip.setPixelColor(44, R, G, B);
-  strip.setPixelColor(45, R, G, B);
-  strip.setPixelColor(46, R, G, B);
+  strip.setPixelColor(44, colorR, colorG, colorB);
+  strip.setPixelColor(45, colorR, colorG, colorB);
+  strip.setPixelColor(46, colorR, colorG, colorB);
 }
 
 void zwei() {
-  strip.setPixelColor(51, R, G, B);
-  strip.setPixelColor(52, R, G, B);
-  strip.setPixelColor(53, R, G, B);
-  strip.setPixelColor(54, R, G, B);
+  strip.setPixelColor(51, colorR, colorG, colorB);
+  strip.setPixelColor(52, colorR, colorG, colorB);
+  strip.setPixelColor(53, colorR, colorG, colorB);
+  strip.setPixelColor(54, colorR, colorG, colorB);
 }
 
 void drei() {
-  strip.setPixelColor(40, R, G, B);
-  strip.setPixelColor(41, R, G, B);
-  strip.setPixelColor(42, R, G, B);
-  strip.setPixelColor(43, R, G, B);
+  strip.setPixelColor(40, colorR, colorG, colorB);
+  strip.setPixelColor(41, colorR, colorG, colorB);
+  strip.setPixelColor(42, colorR, colorG, colorB);
+  strip.setPixelColor(43, colorR, colorG, colorB);
 }
 
 void vier() {
-  strip.setPixelColor(33, R, G, B);
-  strip.setPixelColor(34, R, G, B);
-  strip.setPixelColor(35, R, G, B);
-  strip.setPixelColor(36, R, G, B);
+  strip.setPixelColor(33, colorR, colorG, colorB);
+  strip.setPixelColor(34, colorR, colorG, colorB);
+  strip.setPixelColor(35, colorR, colorG, colorB);
+  strip.setPixelColor(36, colorR, colorG, colorB);
 }
 
 void sechs() {
-  strip.setPixelColor(22, R, G, B);
-  strip.setPixelColor(23, R, G, B);
-  strip.setPixelColor(24, R, G, B);
-  strip.setPixelColor(25, R, G, B);
-  strip.setPixelColor(26, R, G, B);
+  strip.setPixelColor(22, colorR, colorG, colorB);
+  strip.setPixelColor(23, colorR, colorG, colorB);
+  strip.setPixelColor(24, colorR, colorG, colorB);
+  strip.setPixelColor(25, colorR, colorG, colorB);
+  strip.setPixelColor(26, colorR, colorG, colorB);
 }
 
 void acht() {
-  strip.setPixelColor(29, R, G, B);
-  strip.setPixelColor(30, R, G, B);
-  strip.setPixelColor(31, R, G, B);
-  strip.setPixelColor(32, R, G, B);
+  strip.setPixelColor(29, colorR, colorG, colorB);
+  strip.setPixelColor(30, colorR, colorG, colorB);
+  strip.setPixelColor(31, colorR, colorG, colorB);
+  strip.setPixelColor(32, colorR, colorG, colorB);
 }
 
 void sieben() {
-  strip.setPixelColor(16, R, G, B);
-  strip.setPixelColor(17, R, G, B);
-  strip.setPixelColor(18, R, G, B);
-  strip.setPixelColor(19, R, G, B);
-  strip.setPixelColor(20, R, G, B);
-  strip.setPixelColor(21, R, G, B);
+  strip.setPixelColor(16, colorR, colorG, colorB);
+  strip.setPixelColor(17, colorR, colorG, colorB);
+  strip.setPixelColor(18, colorR, colorG, colorB);
+  strip.setPixelColor(19, colorR, colorG, colorB);
+  strip.setPixelColor(20, colorR, colorG, colorB);
+  strip.setPixelColor(21, colorR, colorG, colorB);
 }
 
 void zwolf() {
-  strip.setPixelColor(11, R, G, B);
-  strip.setPixelColor(12, R, G, B);
-  strip.setPixelColor(13, R, G, B);
-  strip.setPixelColor(14, R, G, B);
-  strip.setPixelColor(15, R, G, B);
+  strip.setPixelColor(11, colorR, colorG, colorB);
+  strip.setPixelColor(12, colorR, colorG, colorB);
+  strip.setPixelColor(13, colorR, colorG, colorB);
+  strip.setPixelColor(14, colorR, colorG, colorB);
+  strip.setPixelColor(15, colorR, colorG, colorB);
 }
 
 void zehn2() {
-  strip.setPixelColor(0, R, G, B);
-  strip.setPixelColor(1, R, G, B);
-  strip.setPixelColor(2, R, G, B);
-  strip.setPixelColor(3, R, G, B);
+  strip.setPixelColor(0, colorR, colorG, colorB);
+  strip.setPixelColor(1, colorR, colorG, colorB);
+  strip.setPixelColor(2, colorR, colorG, colorB);
+  strip.setPixelColor(3, colorR, colorG, colorB);
 }
 
 void neun() {
-  strip.setPixelColor(3, R, G, B);
-  strip.setPixelColor(4, R, G, B);
-  strip.setPixelColor(5, R, G, B);
-  strip.setPixelColor(6, R, G, B);
+  strip.setPixelColor(3, colorR, colorG, colorB);
+  strip.setPixelColor(4, colorR, colorG, colorB);
+  strip.setPixelColor(5, colorR, colorG, colorB);
+  strip.setPixelColor(6, colorR, colorG, colorB);
 }
 
 void uhr() {
-  strip.setPixelColor(8, R, G, B);
-  strip.setPixelColor(9, R, G, B);
-  strip.setPixelColor(10, R, G, B);
+  strip.setPixelColor(8, colorR, colorG, colorB);
+  strip.setPixelColor(9, colorR, colorG, colorB);
+  strip.setPixelColor(10, colorR, colorG, colorB);
 }
 
 void ersterpunkt() {
-  strip.setPixelColor(110, R, G, B);
+  strip.setPixelColor(110, colorR, colorG, colorB);
 }
 
 void zweiterpunkt() {
-  strip.setPixelColor(110, R, G, B);
-  strip.setPixelColor(112, R, G, B);
+  strip.setPixelColor(110, colorR, colorG, colorB);
+  strip.setPixelColor(112, colorR, colorG, colorB);
 
 }
 
 void dritterpunkt() {
-  strip.setPixelColor(110, R, G, B);
-  strip.setPixelColor(112, R, G, B);
-  strip.setPixelColor(114, R, G, B);
+  strip.setPixelColor(110, colorR, colorG, colorB);
+  strip.setPixelColor(112, colorR, colorG, colorB);
+  strip.setPixelColor(114, colorR, colorG, colorB);
 }
 
 void vierterpunkt() {
-  strip.setPixelColor(110, R, G, B);
-  strip.setPixelColor(112, R, G, B);
-  strip.setPixelColor(114, R, G, B);
-  strip.setPixelColor(116, R, G, B);
+  strip.setPixelColor(110, colorR, colorG, colorB);
+  strip.setPixelColor(112, colorR, colorG, colorB);
+  strip.setPixelColor(114, colorR, colorG, colorB);
+  strip.setPixelColor(116, colorR, colorG, colorB);
 }
 
 void keinpunkt() {
@@ -634,20 +634,20 @@ void uhrdisp() {
   }
 
 
-  if (hour() == 24 && minute() < 5 || hour() == 12 && minute() < 5) {                    // zwolf uhr oder vierundzwanzig
+  if (hour() == 0 && minute() < 5 || hour() == 12 && minute() < 5) {                    // zwolf uhr oder vierundzwanzig
     zwolf();
     uhr();
   }
-  if (hour() == 24 && minute() >= 5 && minute() < 15 || hour() == 12 && minute() >= 5 && minute() < 15 ) {
+  if (hour() == 0 && minute() >= 5 && minute() < 15 || hour() == 12 && minute() >= 5 && minute() < 15 ) {
     zwolf();
   }
-  if (hour() == 24 && minute() >= 15 && minute() < 20 || hour() == 12 && minute() >= 15 && minute() < 20 ) {
+  if (hour() == 0 && minute() >= 15 && minute() < 20 || hour() == 12 && minute() >= 15 && minute() < 20 ) {
     eins();
   }
-  if (hour() == 24 && minute() >= 20 && minute() < 25 || hour() == 12 && minute() >= 20 && minute() < 25 ) {
+  if (hour() == 0 && minute() >= 20 && minute() < 25 || hour() == 12 && minute() >= 20 && minute() < 25 ) {
     zwolf();
   }
-  if (hour() == 24 && minute() >= 25 && minute() < 60 || hour() == 12 && minute() >= 25 && minute() < 60 ) {
+  if (hour() == 0 && minute() >= 25 && minute() < 60 || hour() == 12 && minute() >= 25 && minute() < 60 ) {
     eins();
   }
 

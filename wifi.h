@@ -1,3 +1,4 @@
+
 // Indicates whether ESP has WiFi credentials saved from previous session
 bool initialConfig = false;
 char customhtml[24] = "type=\"checkbox\"";

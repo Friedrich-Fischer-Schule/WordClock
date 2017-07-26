@@ -3,9 +3,9 @@
 #include <Adafruit_NeoPixel.h>
 #define NEOPIXEL_PIN 5        // PIN where neopixel / WS2811 strip is attached
 #define NEOPIXEL_NUMLEDS 117  // Number of leds in the strip
-#define R 30 //ROT variable
-#define G 100//GRÜN
-#define B 155//BLAU 
+int colorR = 30;        //ROT variable
+int colorG = 100;       //GRÜN
+int colorB = 155;       //BLAU 
 int wc = 0;
 #define d 50 //delay variable
 int iMode = 0;
