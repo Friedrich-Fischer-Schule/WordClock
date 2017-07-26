@@ -136,14 +136,6 @@ void KNIGHT() {
   }
 }
 
-void printDigits(int digits) {
-  // utility function for digital clock display: prints preceding colon and leading 0
-  Serial.print(":");
-  if (digits < 10)
-    Serial.print('0');
-  Serial.print(digits);
-}
-
 void es() {
   strip.setPixelColor(108, colorR, colorG, colorB);
   strip.setPixelColor(109, colorR, colorG, colorB);

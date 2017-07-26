@@ -38,6 +38,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
     case WStype_TEXT:
       DBG_OUTPUT.printf("[%u] get Text: %s\n", num, payload);
 
+      // # ==> Set Clock color.
       if (payload[0] == '#') {
         // we get RGB data
 
@@ -51,6 +52,22 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
         if (iMode == 0)
           uhrdisp();
       }
+
+      // $ ==> Set Clock mode.
+      if (payload[0] == '~') {
+        iMode = (uint8_t) strtol((const char *) &payload[1], NULL, 10);
+        iMode = constrain(iMode, 0, 255);
+        //strip.setColor(main_color.red, main_color.green, main_color.blue);
+        //strip.setMode(ws2812fx_mode);
+        webSocket.sendTXT(num, "OK");
+      }
+
+      // resetWifi ==> reset Wifi SSID and passphrase.
+      if ((const char *)&payload[0] == "resetWifi") {
+        WiFiManager wifiManager;
+        wifiManager.resetSettings();
+      }
+
       break;
 
     case WStype_BIN:
