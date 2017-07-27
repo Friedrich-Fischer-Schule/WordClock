@@ -4,10 +4,7 @@
 #include "definitions.h"
 
 #include <ESP8266WiFi.h>          //https://github.com/esp8266/Arduino
-#include <ESP8266WebServer.h>
-#include <WebSocketsServer.h>
 #include <DNSServer.h>
-#include <ESP8266mDNS.h>
 #include <Hash.h>
 #include <WiFiManager.h>         //https://github.com/tzapu/WiFiManager
 #include "filesystem.h"
@@ -15,68 +12,10 @@
 #include "leddisplay.h"
 #include "update.h"
 #include "wifi.h"
-
-ESP8266WebServer webServer ( 80 );
-WebSocketsServer webSocket = WebSocketsServer(81);
-
-void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
-
-  switch (type) {
-    case WStype_DISCONNECTED:
-      DBG_OUTPUT.printf("[%u] Disconnected!\n", num);
-      break;
-
-    case WStype_CONNECTED: {
-        IPAddress ip = webSocket.remoteIP(num);
-        DBG_OUTPUT.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
-
-        // send message to client
-        webSocket.sendTXT(num, "Connected");
-      }
-      break;
-
-    case WStype_TEXT:
-      DBG_OUTPUT.printf("[%u] get Text: %s\n", num, payload);
-
-      // # ==> Set Clock color.
-      if (payload[0] == '#') {
-        // we get RGB data
-
-        // decode rgb data
-        uint32_t rgb = (uint32_t) strtol((const char *) &payload[1], NULL, 16);
-
-        colorR = ((rgb >> 16) & 0xFF);
-        colorG = ((rgb >> 8) & 0xFF);
-        colorB = ((rgb >> 0) & 0xFF);
-
-        if (iMode == 0)
-          uhrdisp();
-      }
-
-      // $ ==> Set Clock mode.
-      if (payload[0] == '~') {
-        iMode = (uint8_t) strtol((const char *) &payload[1], NULL, 10);
-        iMode = constrain(iMode, 0, 255);
-        //strip.setColor(main_color.red, main_color.green, main_color.blue);
-        //strip.setMode(ws2812fx_mode);
-        webSocket.sendTXT(num, "OK");
-      }
-
-      // resetWifi ==> reset Wifi SSID and passphrase.
-      if ((const char *)&payload[0] == "resetWifi") {
-        WiFiManager wifiManager;
-        wifiManager.resetSettings();
-      }
-
-      break;
-
-    case WStype_BIN:
-      break;
-
-    default:
-      break;
-  }
-}
+#include "websocket.h"
+#include "webserver.h"
+#include "mdns.h"
+#include <ESP8266Ping.h>
 
 void setup() {
   // put your setup code here, to run once:
@@ -93,33 +32,23 @@ void setup() {
 
   // wifi
   WIFI_setup();
-  check_for_config_portal_request();
 
-  // OTA and HTTP_updates
-  OTA_setup();
+  if ((WiFi.status() == WL_CONNECTED) && Ping.ping("www.google.com")) {
+    // OTA and HTTP_updates
+    OTA_setup();
 
-  // NTP
-  NTP_setup();
+    // NTP
+    NTP_setup();
 
-  // start webSocket server
-  webSocket.begin();
-  webSocket.onEvent(webSocketEvent);
+    // WebSocket
+    WebSocket_setup();
 
-  if ( MDNS.begin ( "WordClock" ) ) {
-    DBG_OUTPUT.println ( "MDNS responder started" );
+    // WebServer
+    WebServer_setup();
+
+    // mDNS
+    mDNS_setup();
   }
-
-  // handle index
-  webServer.on("/", []() {
-    // send index.html
-    webServer.send(200, "text/html", "<html><head><script>var connection = new WebSocket('ws://'+location.hostname+':81/', ['arduino']);connection.onopen = function () {  connection.send('Connect ' + new Date()); }; connection.onerror = function (error) {    console.log('WebSocket Error ', error);};connection.onmessage = function (e) {  console.log('Server: ', e.data);};function sendRGB() {  var r = parseInt(document.getElementById('r').value).toString(16);  var g = parseInt(document.getElementById('g').value).toString(16);  var b = parseInt(document.getElementById('b').value).toString(16);  if(r.length < 2) { r = '0' + r; }   if(g.length < 2) { g = '0' + g; }   if(b.length < 2) { b = '0' + b; }   var rgb = '#'+r+g+b;    console.log('RGB: ' + rgb); connection.send(rgb); }</script></head><body><div>LED Control:<br/><br/>R: <input id=\"r\" type=\"range\" min=\"0\" max=\"255\" step=\"1\" oninput=\"sendRGB();\" /><br/>G: <input id=\"g\" type=\"range\" min=\"0\" max=\"255\" step=\"1\" oninput=\"sendRGB();\" /><br/>B: <input id=\"b\" type=\"range\" min=\"0\" max=\"255\" step=\"1\" oninput=\"sendRGB();\" /><br/></div></body></html>");
-  });
-
-  webServer.begin();
-
-  // Add service to MDNS
-  MDNS.addService("http", "tcp", 80);
-  MDNS.addService("ws", "tcp", 81);
 }
 
 void loop() {
@@ -127,9 +56,8 @@ void loop() {
 
   check_for_updates();
   check_for_config_portal_request();
-
-  webServer.handleClient();
-  webSocket.loop();
+  check_for_webserver_event();
+  check_for_websocket_event();
 
   if (minute() != lastMinute) {
     lastMinute = minute();

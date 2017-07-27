@@ -4,7 +4,7 @@
 int lastMinute;
 
 // NTP Servers:
-static const char ntpServerName[] = "us.pool.ntp.org";
+static const char ntpServerName[] = "de.pool.ntp.org";
 //static const char ntpServerName[] = "time.nist.gov";
 //static const char ntpServerName[] = "time-a.timefreq.bldrdoc.gov";
 //static const char ntpServerName[] = "time-b.timefreq.bldrdoc.gov";
