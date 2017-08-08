@@ -53,6 +53,7 @@ void check_for_config_portal_request() {
     DBG_OUTPUT.println("Configuration portal requested");
     //Local intialization. Once its business is done, there is no need to keep it around
 
+    webServer.close();
     // Initialize WiFIManager
     WiFiManager wifiManager;
 

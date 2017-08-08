@@ -7,13 +7,13 @@
 #include <DNSServer.h>
 #include <Hash.h>
 #include <WiFiManager.h>         //https://github.com/tzapu/WiFiManager
-#include "filesystem.h"
 #include "ntp.h"
 #include "leddisplay.h"
-#include "update.h"
-#include "wifi.h"
+#include "filesystem.h"
 #include "websocket.h"
 #include "webserver.h"
+#include "update.h"
+#include "wifi.h"
 #include "mdns.h"
 #include <ESP8266Ping.h>
 
@@ -57,7 +57,7 @@ void loop() {
   check_for_updates();
   check_for_config_portal_request();
   check_for_webserver_event();
-  check_for_websocket_event();
+  //check_for_websocket_event();
 
   if (minute() != lastMinute) {
     lastMinute = minute();

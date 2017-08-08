@@ -3,10 +3,11 @@
 #include <Adafruit_NeoPixel.h>
 #define NEOPIXEL_PIN 5        // PIN where neopixel / WS2811 strip is attached
 #define NEOPIXEL_NUMLEDS 117  // Number of leds in the strip
-int colorR = 30;        //ROT variable
-int colorG = 100;       //GRÜN
-int colorB = 155;       //BLAU 
-int wc = 0;
+int colorR = 30;        // ROT variable
+int colorG = 100;       // GRÜN
+int colorB = 155;       // BLAU 
+int brightness = 192;   // Global variable for storing the brightness (255 == 100%)
+
 #define d 50 //delay variable
 int iMode = 0;
   // 0 = Uhr
@@ -28,7 +29,7 @@ const char* CONFIG_FILE = "/config.json";
 
 // Update settings
 #define ENABLE_OTA    // If defined, enable Arduino OTA code.
-#define CHECK_INTERVAL 60  // interval in seconds for auto update check
+#define CHECK_INTERVAL 600  // interval in seconds for auto update check
 /*Trigger for inititating config mode is Pin D3 and also flash button on NodeMCU
    Flash button is convenient to use but if it is pressed it will stuff up the serial port device driver
    until the computer is rebooted on windows machines.
@@ -39,6 +40,4 @@ const int TRIGGER_PIN = 0; // D3 on NodeMCU and WeMos.
 // Global variables / definitions
 // ***************************************************************************
 #define DBG_OUTPUT Serial  // Set debug output port
-
-int brightness = 192;       // Global variable for storing the brightness (255 == 100%)
 

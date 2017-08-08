@@ -48,6 +48,13 @@ bool readConfigFile() {
       DBG_OUTPUT.println("no custom ip in config");
     }
 
+    if (json["colorR"]) {
+      colorR = json["colorR"];
+      colorG = json["colorG"];
+      colorB = json["colorB"];
+      brightness = json["brightness"];
+    }
+
   }
   DBG_OUTPUT.println("\nConfig file was successfully parsed");
   return true;
@@ -64,6 +71,11 @@ bool writeConfigFile() {
   json["subnet"] = WiFi.subnetMask().toString();
 
   json["useDHCP"] = useDHCP;
+
+  json["colorR"] = colorR;
+  json["colorG"] = colorG;
+  json["colorB"] = colorB;
+  json["brightness"] = brightness;
 
   // Open file for writing
   File f = SPIFFS.open(CONFIG_FILE, "w");
