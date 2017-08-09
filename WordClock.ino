@@ -57,15 +57,20 @@ void loop() {
   check_for_updates();
   check_for_config_portal_request();
   check_for_webserver_event();
-  //check_for_websocket_event();
+  //check_for_websocket_event();     //we switched to async mode
 
+  if (second() != lastSecond) {
+    lastSecond = second();
+    char sTime[14] = {0};
+    sprintf(sTime,"time=%02i:%02i:%02i", hour(), minute(), second());
+    webSocket.broadcastTXT(sTime);
+  }
+  
   if (minute() != lastMinute) {
     lastMinute = minute();
-    DBG_OUTPUT.print(hour());
-    DBG_OUTPUT.print(":");
-    DBG_OUTPUT.print(minute());
-    DBG_OUTPUT.print(":");
-    DBG_OUTPUT.println(second());
+    char sTime[14] = {0};
+    sprintf(sTime,"time=%02i:%02i:%02i", hour(), minute(), second());
+    DBG_OUTPUT.println(sTime);
 
     if (iMode == 0)
       uhrdisp();

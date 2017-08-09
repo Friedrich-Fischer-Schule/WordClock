@@ -2,6 +2,7 @@
 #include <WiFiUdp.h>
 
 int lastMinute;
+int lastSecond;
 
 // NTP Servers:
 static const char ntpServerName[] = "de.pool.ntp.org";

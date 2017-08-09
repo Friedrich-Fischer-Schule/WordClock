@@ -11,20 +11,17 @@ const char MAIN_page[] PROGMEM = R"=====(
     <style type="text/css">
       #container {
         position: absolute;
-        width: 100%;
+        width: 98%;
         min-height: 100%;
         left: 0;
         top: 0;
-        padding-top: 30px;
-        padding-left: 30px;
-        padding-right: 30px;
-        padding-bottom: 30px;
+        padding: 1%;
         background-color: #bfbaba;
       }
       input[type=range] {
         -webkit-appearance: none;
         width: 90%;
-        margin: 30px 30px;
+        margin: 22px auto 22px 0;
       }
       input[type=range]:focus {
         outline: none;
@@ -140,20 +137,67 @@ const char MAIN_page[] PROGMEM = R"=====(
       #sliderB::-ms-fill-lower {
         background: #0000ff;
       }
-      button {
+      .Button {
+        font-size: 35px;
+      }
+      .colorButton {
         font-size: 24px;
+        width: 15%;
+        height: 30px;
+        margin: 2px;
       }
       h2 {
         float: left;
+      }
+      #sliders {
+        width: 80%;
+        height: 100%;
+        float: left;
+      }
+      #colorbox {
+        width: 12%;
+        min-height: 140px;
+        float: left;
+        margin: 2%;
+        padding: 0%;
+        background: red;
       }
     </style>
   </head>
   <body>
     <div id=container>
-      <div><div><h1>WordClock color:</h1></div><div><button id="Save" type="button" onclick="sendSaveSettings();"> Save default color </button></div></div>
-      <div><h2>R: </h2><input id="sliderR" type="range" min="0" max="255" step="1" oninput="sendRGB();" onchange="sendRGB();" /></div>
-      <div><h2>G: </h2><input id="sliderG" type="range" min="0" max="255" step="1" oninput="sendRGB();" onchange="sendRGB();" /></div>
-      <div><h2>B: </h2><input id="sliderB" type="range" min="0" max="255" step="1" oninput="sendRGB();" onchange="sendRGB();" /></div>
+      <div id="header" style="float: left; width: 100%; text-align: center; font-size: 40px; font-weight: bold; margin-bottom: 20px;">
+        WordClock Settings:
+      </div>
+      <div style="float: left; width: 100%;">
+        <button style="background: #ff0000" class="colorButton" id="RED" type="button" onclick="setColor('#ff0000');"></button>
+        <button style="background: #00ff00" class="colorButton" id="GREEN" type="button" onclick="setColor('#00ff00');"></button>
+        <button style="background: #0000ff" class="colorButton" id="BLUE" type="button" onclick="setColor('#0000ff');"></button>
+        <button style="background: #ffff00" class="colorButton" id="YELLOW" type="button" onclick="setColor('#ffff00');"></button>
+        <button style="background: #00ffff" class="colorButton" id="CYAN" type="button" onclick="setColor('#00ffff');"></button>
+        <button style="background: #ff00ff" class="colorButton" id="MAGENTA" type="button" onclick="setColor('#ff00ff');"></button>
+        <button style="background: #ffa500" class="colorButton" id="ORANGE" type="button" onclick="setColor('#ffa500');"></button>
+        <button style="background: #ff1493" class="colorButton" id="DeepPink" type="button" onclick="setColor('#ff1493');"></button>
+        <button style="background: #a020f0" class="colorButton" id="PURPLE" type="button" onclick="setColor('#a020f0');"></button>
+        <button style="background: #ffd700" class="colorButton" id="GOLD" type="button" onclick="setColor('#ffd700');"></button>
+        <button style="background: #ee82ee" class="colorButton" id="VIOLET" type="button" onclick="setColor('#ee82ee');"></button>
+        <button style="background: #ffffff" class="colorButton" id="WHITE" type="button" onclick="setColor('#ffffff');"></button>
+      </div>    
+      <div style="margin-top: 20px; min-height: 250px; float: left; width: 100%;">
+        <div id="sliders">
+          <div><input id="sliderR" type="range" min="0" max="255" step="1" oninput="sendRGB();" onchange="sendRGB();" /></div>
+          <div><input id="sliderG" type="range" min="0" max="255" step="1" oninput="sendRGB();" onchange="sendRGB();" /></div>
+          <div><input id="sliderB" type="range" min="0" max="255" step="1" oninput="sendRGB();" onchange="sendRGB();" /></div>
+        </div>
+        <div id="colorbox"> </div>
+      </div>
+      <div style="margin-top: 20px; min-height: 50px; float: left; width: 100%;">
+        <button class="Button" onclick="sendSaveSettings();"> Save default color </button>
+        <button class="Button" onclick="sendTest();"> - - - - - - </button>
+        <button class="Button" onclick="sendTest();"> - - - - - - </button>
+        <button class="Button" onclick="sendTest();"> - - - - - - </button>
+        <button class="Button" onClick="if(confirm('Delete your WiFi settings?.')) resetWifi(); else return false;">Delete WiFi settings</button>
+      </div>
     </div>
     <script type="text/javascript">
       var connection = new WebSocket('ws://'+location.hostname+':81/', ['arduino']);
@@ -170,8 +214,19 @@ const char MAIN_page[] PROGMEM = R"=====(
           document.getElementById('sliderR').value=((rgb >> 16) & 0xFF);
           document.getElementById('sliderG').value=((rgb >> 8) & 0xFF);
           document.getElementById('sliderB').value=((rgb >> 0) & 0xFF);
+          document.getElementById('colorbox').style.background=e.data;
+        }
+        if (strncmp(e.data, "time=", 5) == 0) {
+          document.getElementById('header').innerHTML = "WordClock: " + e.data.substring(5);
         }
       }
+
+      function strncmp(str1, str2, n) {
+        str1 = str1.substring(0, n);
+        str2 = str2.substring(0, n);
+        return ( ( str1 == str2 ) ? 0 : (( str1 > str2 ) ? 1 : -1 ));
+      }
+
       function sendRGB() {
         var r = parseInt(document.getElementById('sliderR').value).toString(16);
         var g = parseInt(document.getElementById('sliderG').value).toString(16);
@@ -187,12 +242,31 @@ const char MAIN_page[] PROGMEM = R"=====(
         }
         var rgb = '#'+r+g+b;
         console.log('RGB: ' + rgb);
+        document.getElementById('colorbox').style.background=rgb;
+        document.getElementById('colorbox').innerHTML = rgb;
         connection.send(rgb);
+      }
+    
+      function setColor(color) {
+        var rgb = parseInt(color.substring(1), 16);
+        document.getElementById('sliderR').value=((rgb >> 16) & 0xFF);
+        document.getElementById('sliderG').value=((rgb >> 8) & 0xFF);
+        document.getElementById('sliderB').value=((rgb >> 0) & 0xFF);
+        sendRGB();
       }
 
       function sendSaveSettings() {
         console.log('send saveSettings');
         connection.send("saveSettings");
+      }
+
+      function resetWifi() {
+        console.log('send resetWiFi');
+        connection.send("resetWiFi");
+      }
+
+      function sendTest() {
+        console.log('send Test');
       }
     </script>
   </body>
