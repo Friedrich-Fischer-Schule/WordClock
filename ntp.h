@@ -50,7 +50,7 @@ int dstOffset (unsigned long unixTime)
   dstStart += 2*SECS_PER_HOUR;  //2AM
   te.Month=11;
   dstEnd = makeTime(te);
-  dstEnd = nextSunday(dstEnd);  //First Sunday in November
+  dstEnd = previousSunday(dstEnd);  //Last Sunday in October
   dstEnd += SECS_PER_HOUR;  //1AM
   if (t>=dstStart && t<dstEnd) return (3600);  //Add back in one hours worth of seconds - DST in effect
   else return (0);  //NonDST
