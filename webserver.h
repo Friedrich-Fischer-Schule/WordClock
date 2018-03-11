@@ -191,16 +191,42 @@ const char MAIN_page[] PROGMEM = R"=====(
         </div>
         <div id="colorbox"> </div>
       </div>
-      <div style="margin-top: 20px; min-height: 50px; float: left; width: 100%;">
-        <button class="Button" onclick="sendSaveSettings();"> Save default color </button>
-        <button class="Button" onclick="sendTest();"> - - - - - - </button>
-        <button class="Button" onclick="sendTest();"> - - - - - - </button>
-        <button class="Button" onclick="sendTest();"> - - - - - - </button>
-        <button class="Button" onClick="if(confirm('Delete your WiFi settings?.')) resetWifi(); else return false;">Delete WiFi settings</button>
+      <div id="brightness" style="float: left; width: 90%; font-size: 20px; font-weight: bold; margin-bottom: 10px; padding: 10px; border:1px solid black;">
+          Umgebungslicht =
+      </div>
+      <div style="float: left; width: 90%; font-size: 20px; font-weight: bold; margin-bottom: 10px; padding: 10px; border:1px solid black;">
+          <a>Animations Modus:</a>
+          <input type="radio" id="mode0" name="animode" onclick="handleModeClick(this);" value="0">
+          <label for="mode0"> ohne</label>
+          <input type="radio" id="mode1" name="animode" onclick="handleModeClick(this);" value="1">
+          <label for="mode1"> alle 5 Minuten</label>
+          <input type="radio" id="mode2" name="animode" onclick="handleModeClick(this);" value="2">
+          <label for="mode2"> alle 15 Minuten</label>
+          <input type="radio" id="mode3" name="animode" onclick="handleModeClick(this);" value="3">
+          <label for="mode2"> jede Stunde</label>
+      </div>
+      <div id="off-time" style="float: left; width: 90%; font-size: 20px; font-weight: bold; margin-bottom: 10px; padding: 10px; border:1px solid black;">
+           <a>Uhr aus von </a> <input type="time" id="off_time_begin" onchange="sendOFFtime();"> <a> bis </a> <input type="time" id="off_time_end" onchange="sendOFFtime();">
+      </div>
+      <div style="margin-top: 20px; min-height: 40px; float: left; width: 100%;">
+        <button class="Button" onclick="sendSaveSettings();"> Default Farbe speichern </button>
+        <button class="Button" onclick="sendTestLED();"> Teste LEDs </button>
+        <button class="Button" onClick="if(confirm('Uhr neu starten?.')) resetClock(); else return false;">Uhr neu starten</button>
+        <button class="Button" onClick="if(confirm('Alle Einstellungen löschen, sind Sie sicher?.')) resetAll(); else return false;">Alle Einstellungen löschen</button>
+        <button class="Button" onClick="if(confirm('WLAN Daten löschen, sind Sie sicher?.')) resetWifi(); else return false;">WLAN Daten löschen</button>
+      </div>
+      <div style="margin-top: 20px; float: left; width: 90%; font-size: 20px; font-weight: bold; margin-bottom: 10px; padding: 10px; border:1px solid black;">
+          <a>LED Pin:</a>
+          <input type="radio" id="LEDpin2" name="ledpin" onclick="handleLEDPinClick(this);" value="2">
+          <label for="LEDpin2"> 2</label>
+          <input type="radio" id="LEDpin5" name="ledpin" onclick="handleLEDPinClick(this);" value="5">
+          <label for="LEDpin5"> 5</label>
       </div>
     </div>
     <script type="text/javascript">
       var connection = new WebSocket('ws://'+location.hostname+':81/', ['arduino']);
+      var versionnumber = ""; 
+      var brightness = "";
       connection.onopen = function () {
         connection.send('Connect ' + new Date());
       }
@@ -216,8 +242,31 @@ const char MAIN_page[] PROGMEM = R"=====(
           document.getElementById('sliderB').value=((rgb >> 0) & 0xFF);
           document.getElementById('colorbox').style.background=e.data;
         }
+        if (e.data[0] == '~') {
+          var iMode = parseInt(e.data.substring(1), 10);
+          var elem = 'mode' + iMode;
+          document.getElementById(elem).checked = true;
+        }
+        if (e.data[0] == '+') {
+          var iLEDPin = parseInt(e.data.substring(1), 10);
+          var elem = 'LEDpin' + iLEDPin;
+          document.getElementById(elem).checked = true;
+        }
         if (strncmp(e.data, "time=", 5) == 0) {
-          document.getElementById('header').innerHTML = "WordClock: " + e.data.substring(5);
+          document.getElementById('header').innerHTML = "WordClock (Ver." + versionnumber + "): " + e.data.substring(5);
+        }
+        if (strncmp(e.data, "version=", 8) == 0) {
+          versionnumber = e.data.substring(8);
+        }
+        if (strncmp(e.data, "brightness=", 11) == 0) {
+          brightness = e.data.substring(11);
+          document.getElementById('brightness').innerHTML = "Umgebungslicht = " + brightness;
+        }
+        if (strncmp(e.data, "OFFtime=", 8) == 0) {
+          var OFFbegin = e.data.substring(8,13);
+          var OFFend = e.data.substring(14,19);
+          document.getElementById('off_time_begin').value = OFFbegin;
+          document.getElementById('off_time_end').value = OFFend;
         }
       }
 
@@ -227,6 +276,14 @@ const char MAIN_page[] PROGMEM = R"=====(
         return ( ( str1 == str2 ) ? 0 : (( str1 > str2 ) ? 1 : -1 ));
       }
 
+      function sendOFFtime() {
+        var OFFbegin = document.getElementById('off_time_begin').value;
+        var OFFend = document.getElementById('off_time_end').value;
+        var OFFtime = 'OFFtime=' + OFFbegin + '-' + OFFend;
+        console.log(OFFtime);
+        connection.send(OFFtime);
+      }
+    
       function sendRGB() {
         var r = parseInt(document.getElementById('sliderR').value).toString(16);
         var g = parseInt(document.getElementById('sliderG').value).toString(16);
@@ -241,7 +298,7 @@ const char MAIN_page[] PROGMEM = R"=====(
           b = '0' + b;
         }
         var rgb = '#'+r+g+b;
-        console.log('RGB: ' + rgb);
+        console.log('send RGB: ' + rgb);
         document.getElementById('colorbox').style.background=rgb;
         document.getElementById('colorbox').innerHTML = rgb;
         connection.send(rgb);
@@ -261,10 +318,49 @@ const char MAIN_page[] PROGMEM = R"=====(
       }
 
       function resetWifi() {
-        console.log('send resetWiFi');
-        connection.send("resetWiFi");
+        if (confirm('Bist du 100% sicher?')) {
+          console.log('send resetWiFi');
+          connection.send("resetWiFi");
+        } else {
+          console.log('send resetWiFi ABORDED!');
+        }
       }
 
+      function resetAll() {
+        if (confirm('Bist du 100% sicher?')) {
+          console.log('send resetAll');
+          connection.send("resetAll");
+        } else {
+          console.log('send resetAll ABORDED!');
+        }
+      }
+
+      function resetClock() {
+        if (confirm('Bist du 100% sicher?')) {
+          console.log('send resetClock');
+          connection.send("resetClock");
+        } else {
+          console.log('send resetClock ABORDED!');
+        }
+      }
+      
+      function handleModeClick(modeRadio) {
+        var aniMode = '~' + modeRadio.value;
+        console.log(aniMode);
+        connection.send(aniMode);
+      }
+
+      function handleLEDPinClick(pinRadio) {
+        var setLEDPin = '+' + pinRadio.value;
+        console.log(setLEDPin);
+        connection.send(setLEDPin);
+      }
+      
+      function sendTestLED() {
+        console.log('send TestLED');
+        connection.send("testLED");
+      }
+      
       function sendTest() {
         console.log('send Test');
       }

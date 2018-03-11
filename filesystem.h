@@ -28,6 +28,7 @@ bool readConfigFile() {
       return false;
     }
     json.printTo(DBG_OUTPUT);
+    DBG_OUTPUT.println("");
 
     // Parse all config file parameters, override
     // local config variables with parsed values
@@ -48,13 +49,26 @@ bool readConfigFile() {
       DBG_OUTPUT.println("no custom ip in config");
     }
 
-    if (json["colorR"]) {
+    if (json.containsKey("colorR")) {
       colorR = json["colorR"];
       colorG = json["colorG"];
       colorB = json["colorB"];
       brightness = json["brightness"];
     }
 
+    if (json.containsKey("OFFtime_begin")) {
+      strcpy(OFFtime_begin, json["OFFtime_begin"]);
+      strcpy(OFFtime_end, json["OFFtime_end"]);
+    }
+
+    if (json.containsKey("NEOPIXEL_PIN")) {
+      NEOPIXEL_PIN = json["NEOPIXEL_PIN"];
+    } else {
+      // check if a lightsensor is available, if it is it is the new hardware
+      if (analogRead(iLightsensorPin) > 100) {
+        NEOPIXEL_PIN = 2;
+      }
+    }
   }
   DBG_OUTPUT.println("\nConfig file was successfully parsed");
   return true;
@@ -76,6 +90,11 @@ bool writeConfigFile() {
   json["colorG"] = colorG;
   json["colorB"] = colorB;
   json["brightness"] = brightness;
+
+  json["OFFtime_begin"] = OFFtime_begin;
+  json["OFFtime_end"] = OFFtime_end;
+
+  json["NEOPIXEL_PIN"] = NEOPIXEL_PIN;
 
   // Open file for writing
   File f = SPIFFS.open(CONFIG_FILE, "w");
@@ -102,5 +121,9 @@ void FS_setup() {
 
   if (!readConfigFile()) {
     DBG_OUTPUT.println("Failed to read configuration file, using default values");
+    // check if a lightsensor is available, if it is it is the new hardware
+    if (analogRead(iLightsensorPin) > 100) {
+      NEOPIXEL_PIN = 2;
+    }
   }
 }

@@ -38,20 +38,19 @@ int dstOffset (unsigned long unixTime)
   time_t t = unixTime;
   tmElements_t te;
   te.Year = year(t)-1970;
-  te.Month =3;
-  te.Day =1;
+  te.Month = 4;
+  te.Day = 1;
   te.Hour = 0;
   te.Minute = 0;
   te.Second = 0;
-  time_t dstStart,dstEnd, current;
+  time_t dstStart, dstEnd, current;
   dstStart = makeTime(te);
-  dstStart = nextSunday(dstStart);  //Once, first Sunday in March
-  dstStart = nextSunday(dstStart);  //Do it again, second Sunday in March
-  dstStart += 2*SECS_PER_HOUR;  //2AM
+  dstStart = previousSunday(dstStart);  //Last Sunday in March
+  dstStart += 2 * SECS_PER_HOUR;  //2AM
   te.Month=11;
   dstEnd = makeTime(te);
   dstEnd = previousSunday(dstEnd);  //Last Sunday in October
-  dstEnd += SECS_PER_HOUR;  //1AM
+  dstEnd += 3 * SECS_PER_HOUR;  //3AM
   if (t>=dstStart && t<dstEnd) return (3600);  //Add back in one hours worth of seconds - DST in effect
   else return (0);  //NonDST
 }

@@ -1,8 +1,3 @@
-void LEDs_setup(){
-  strip.begin();
-  strip.show(); // Initialize all pixels to 'off'
-}
-
 void icon_update(){
   bool icon[] = {0,0,0,1,1,1,1,1,0,0,0,
                    0,0,1,0,0,0,0,0,1,0,0,
@@ -18,7 +13,7 @@ void icon_update(){
   strip.clear();
   for (int i = 0; i < NEOPIXEL_NUMLEDS; i++)
     if (icon[i] == 1)
-      strip.setPixelColor(i, 0, 0, 255);
+      strip.setPixelColor(i, 0, 0, 100);
   strip.show();
 }
 
@@ -37,7 +32,7 @@ void icon_resetWiFi(){
   strip.clear();
   for (int i = 0; i < NEOPIXEL_NUMLEDS; i++)
     if (icon[i] == 1)
-      strip.setPixelColor(i, 0, 0, 255);
+      strip.setPixelColor(i, 0, 0, 100);
   strip.show();
 }
 
@@ -56,7 +51,7 @@ void smiley_OK(){
   strip.clear();
   for (int i = 0; i < NEOPIXEL_NUMLEDS; i++)
     if (smiley[i] == 1)
-      strip.setPixelColor(i, 0, 255, 0);
+      strip.setPixelColor(i, 0, 100, 0);
   strip.show();
 }
 
@@ -75,7 +70,7 @@ void smiley_NOK(){
   strip.clear();
   for (int i = 0; i < NEOPIXEL_NUMLEDS; i++)
     if (smiley[i] == 1)
-      strip.setPixelColor(i, 255, 0, 0);
+      strip.setPixelColor(i, 100, 0, 0);
   strip.show();
 }
 
@@ -114,7 +109,6 @@ void colorWipe(uint32_t c, uint8_t wait) {
 }
 
 void Schlange() {
-
   colorWipe(strip.Color(255, 0, 0), d); // Red
   colorWipe(strip.Color(0, 255, 0), d); // Green
   colorWipe(strip.Color(0, 0, 250), d); // Blue
@@ -491,7 +485,6 @@ void uhrdisp() {
   }
 
 
-
   if (hour() == 16 && minute() < 5 || hour() == 4 && minute() < 5) {        // vier uhr oder sechzehn
     vier();
     uhr();
@@ -508,8 +501,6 @@ void uhrdisp() {
   if (hour() == 16 && minute() >= 25 && minute() < 60 || hour() == 4 && minute() >= 25 && minute() < 60 ) {
     funf2();
   }
-
-
 
 
   if (hour() == 17 && minute() < 5 || hour() == 5 && minute() < 5) {                //funf uhr oder siebzehn
@@ -530,8 +521,6 @@ void uhrdisp() {
   }
 
 
-
-
   if (hour() == 18 && minute() < 5 || hour() == 6 && minute() < 5) {            // sechs uhr oder achtzehn
     sechs();
     uhr();
@@ -548,8 +537,6 @@ void uhrdisp() {
   if (hour() == 18 && minute() >= 25 && minute() < 60 || hour() == 6 && minute() >= 25 && minute() < 60 ) {
     sieben();
   }
-
-
 
 
   if (hour() == 19 && minute() < 5 || hour() == 7 && minute() < 5) {              // sieben uhr oder neunzehn
@@ -588,7 +575,6 @@ void uhrdisp() {
   }
 
 
-
   if (hour() == 21 && minute() < 5 || hour() == 9 && minute() < 5) {      //  neun uhr oder einundzwanzig
     neun();
     uhr();
@@ -607,7 +593,6 @@ void uhrdisp() {
   }
 
 
-
   if (hour() == 22 && minute() < 5 || hour() == 10 && minute() < 5) {                        // zehn  uhr oder zweiundzwanzig
     zehn2();
     uhr();
@@ -624,7 +609,6 @@ void uhrdisp() {
   if (hour() == 22 && minute() >= 25 && minute() < 60 || hour() == 10 && minute() >= 25 && minute() < 60 ) {
     elf();
   }
-
 
 
   if (hour() == 23 && minute() < 5 || hour() == 11 && minute() < 5) {                  // elf uhr oder dreiundzwanzig
@@ -665,3 +649,20 @@ void uhrdisp() {
   strip.show();
 }
 
+void LEDs_setup(){
+  strip.setPin(NEOPIXEL_PIN);
+  strip.begin();
+  strip.show(); // Initialize all pixels to 'off'
+}
+
+void clear_disp(){
+  strip.clear();
+  strip.show();
+}
+
+void animation() {
+  rainbow(20);
+  //colorWipe(d, 20);
+  //KNIGHT();
+  //Schlange();
+}

@@ -17,6 +17,20 @@
 #include "mdns.h"
 #include <ESP8266Ping.h>
 
+bool testDisplayOFFtime(){
+  int acttime = hour() * 60 + minute();
+  int offbegin = atoi(&OFFtime_begin[0]) * 60 + atoi(&OFFtime_begin[3]);
+  int offend = atoi(&OFFtime_end[0]) * 60 + atoi(&OFFtime_end[3]);
+  // start = end => no OFF time
+  if (offbegin == offend)
+    return false;
+  // see if start comes before end
+  if (offbegin < offend)
+    return offbegin <= acttime && acttime <= offend;
+  // start is after end, so do the inverse comparison
+    return !(offend <= acttime && acttime <= offbegin);
+}
+
 void setup() {
   // put your setup code here, to run once:
   DBG_OUTPUT.begin(115200);
@@ -24,11 +38,11 @@ void setup() {
   // print the actual version number
   DBG_OUTPUT.println("SKETCH_VERSION = " SKETCH_VERSION);
 
-  // LED
-  LEDs_setup();
-
   // filesystem
   FS_setup();
+  
+  // LED
+  LEDs_setup();
 
   // wifi
   WIFI_setup();
@@ -64,6 +78,13 @@ void loop() {
     char sTime[14] = {0};
     sprintf(sTime,"time=%02i:%02i:%02i", hour(), minute(), second());
     webSocket.broadcastTXT(sTime);
+
+    int iRoomBrightness = analogRead(iLightsensorPin);
+    char sRoomBrightness[16] = {0};
+    sprintf(sRoomBrightness,"brightness=%04i", iRoomBrightness);
+    webSocket.broadcastTXT(sRoomBrightness);
+    DBG_OUTPUT.printf("Lightsensor = %u", iRoomBrightness);
+    DBG_OUTPUT.println("");
   }
   
   if (minute() != lastMinute) {
@@ -71,17 +92,22 @@ void loop() {
     char sTime[14] = {0};
     sprintf(sTime,"time=%02i:%02i:%02i", hour(), minute(), second());
     DBG_OUTPUT.println(sTime);
-
-    if (iMode == 0)
+    
+    if (!testDisplayOFFtime()) {
+      DBG_OUTPUT.println("Display ON");
+      if ((iMode == 1) && (minute() % 5 == 0)){
+        animation();
+      }
+      if ((iMode == 2) && (minute() % 15 == 0)){
+        animation();
+      }
+      if ((iMode == 3) && (minute() == 0)){
+        animation();
+      }      
       uhrdisp();
-
-    if (iMode == 1)
-      rainbow(20);
-
-    if (iMode == 2)
-      KNIGHT();
-
-    if (iMode == 3)
-      Schlange();
+    } else {
+      clear_disp();
+      DBG_OUTPUT.println("Display OFF");
+    }
   }
 }

@@ -16,9 +16,17 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
 
         // send message to client
         webSocket.sendTXT(num, "Connected");
-        char dataString[8] = {0};
+        char dataString[20] = {0};
         sprintf(dataString,"#%02X%02X%02X",colorR,colorG,colorB);
         webSocket.sendTXT(num, dataString);
+        sprintf(dataString,"OFFtime=%s-%s",OFFtime_begin,OFFtime_end);
+        webSocket.sendTXT(num, dataString);
+        sprintf(dataString,"version=%s", SKETCH_VERSION);
+        webSocket.broadcastTXT(dataString);
+        sprintf(dataString,"~%i", iMode);
+        webSocket.broadcastTXT(dataString);      
+        sprintf(dataString,"+%i", NEOPIXEL_PIN);
+        webSocket.broadcastTXT(dataString);  
       }
       break;
 
@@ -41,16 +49,57 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
             webSocket.sendTXT(i, payload);
           }
         }
-
-        if (iMode == 0)
-          uhrdisp();
+        uhrdisp();
       }
 
       // $ ==> Set Clock mode.
       if (payload[0] == '~') {
         iMode = (uint8_t) strtol((const char *) &payload[1], NULL, 10);
-        iMode = constrain(iMode, 0, 255);
+        iMode = constrain(iMode, 0, 10);
         DBG_OUTPUT.printf("WS: received new iMode=%i\n", iMode);
+        writeConfigFile();        
+        webSocket.sendTXT(num, "OK");
+        for(uint8_t i = 0; i < WEBSOCKETS_SERVER_CLIENT_MAX; i++) {
+          if(i != num) {
+            webSocket.sendTXT(i, payload);
+          }
+        }
+      }
+
+      // $ ==> Set LED pin.
+      if (payload[0] == '+') {
+        NEOPIXEL_PIN = (uint8_t) strtol((const char *) &payload[1], NULL, 10);
+        NEOPIXEL_PIN = constrain(NEOPIXEL_PIN, 0, 10);
+        DBG_OUTPUT.printf("WS: received new LEDPin number=%i\n", NEOPIXEL_PIN);
+        writeConfigFile();
+        LEDs_setup();
+        webSocket.sendTXT(num, "OK");
+        for(uint8_t i = 0; i < WEBSOCKETS_SERVER_CLIENT_MAX; i++) {
+          if(i != num) {
+            webSocket.sendTXT(i, payload);
+          }
+        }
+      }
+
+      // OFFtime ==> save the on and off time (display).
+      if (strncmp((char*)payload, "OFFtime=", 8) == 0) {
+        strncpy ( OFFtime_begin, (char*)payload+8, 5 );
+        strncpy ( OFFtime_end, (char*)payload+14, 5 );
+        DBG_OUTPUT.printf("WS: received OFFtime command %s\n", payload);
+        writeConfigFile();
+        webSocket.sendTXT(num, "OK");
+        for(uint8_t i = 0; i < WEBSOCKETS_SERVER_CLIENT_MAX; i++) {
+          if(i != num) {
+            webSocket.sendTXT(i, payload);
+          }
+        }
+      }
+
+      // testLED ==> test all LEDs with rainbow theme.
+      if (strncmp((char*)payload, "testLED", 7) == 0) {
+        DBG_OUTPUT.printf("WS: received testLED command\n");
+        rainbow(50);
+        uhrdisp();
         webSocket.sendTXT(num, "OK");
       }
 
@@ -74,6 +123,23 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
         ESP.reset();
       }
 
+      // resetAll ==> delete SPIFFS.
+      if (strncmp((char*)payload, "resetAll", 8) == 0) {
+        DBG_OUTPUT.printf("WS: received resetAll command\n");
+        SPIFFS.format();
+        webSocket.sendTXT(num, "OK");
+        delay(2000);
+        ESP.reset();
+      }
+
+      // resetClock ==> reset clock.
+      if (strncmp((char*)payload, "resetClock", 9) == 0) {
+        DBG_OUTPUT.printf("WS: received resetClock command\n");
+        webSocket.sendTXT(num, "OK");
+        delay(1000);
+        ESP.reset();
+      }
+      
       break;
 
     case WStype_BIN:
