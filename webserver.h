@@ -110,6 +110,9 @@ const char MAIN_page[] PROGMEM = R"=====(
       #sliderB::-webkit-slider-runnable-track {
         background: #0000ff;
       }
+      #sliderBright::-webkit-slider-runnable-track {
+        background: #555555;
+      }
       #sliderR::-moz-range-track {
         background: #ff0000;
       }
@@ -118,6 +121,9 @@ const char MAIN_page[] PROGMEM = R"=====(
       }
       #sliderB::-moz-range-track {
         background: #0000ff;
+      }
+      #sliderBright::-moz-range-track {
+        background: #555555;
       }
       #sliderR::-ms-fill-upper {
         background: #ff0000;
@@ -128,6 +134,9 @@ const char MAIN_page[] PROGMEM = R"=====(
       #sliderB::-ms-fill-upper {
         background: #0000ff;
       }
+      #sliderBright::-ms-fill-upper {
+        background: #555555;
+      }
       #sliderR::-ms-fill-lower {
         background: #ff0000;
       }
@@ -137,8 +146,11 @@ const char MAIN_page[] PROGMEM = R"=====(
       #sliderB::-ms-fill-lower {
         background: #0000ff;
       }
+      #sliderBright::-ms-fill-lower {
+        background: #555555;
+      }
       .Button {
-        font-size: 35px;
+        font-size: 24px;
       }
       .colorButton {
         font-size: 24px;
@@ -183,30 +195,37 @@ const char MAIN_page[] PROGMEM = R"=====(
         <button style="background: #ee82ee" class="colorButton" id="VIOLET" type="button" onclick="setColor('#ee82ee');"></button>
         <button style="background: #ffffff" class="colorButton" id="WHITE" type="button" onclick="setColor('#ffffff');"></button>
       </div>    
-      <div style="margin-top: 20px; min-height: 250px; float: left; width: 100%;">
+      <div style="margin-top: 20px; min-height: 250px; float: left; width: 90%;">
         <div id="sliders">
           <div><input id="sliderR" type="range" min="0" max="255" step="1" oninput="sendRGB();" onchange="sendRGB();" /></div>
           <div><input id="sliderG" type="range" min="0" max="255" step="1" oninput="sendRGB();" onchange="sendRGB();" /></div>
           <div><input id="sliderB" type="range" min="0" max="255" step="1" oninput="sendRGB();" onchange="sendRGB();" /></div>
+          <div><input id="sliderBright" type="range" min="0" max="255" step="1" oninput="sendRGB();" onchange="sendRGB();" /></div>
         </div>
         <div id="colorbox"> </div>
       </div>
-      <div id="brightness" style="float: left; width: 90%; font-size: 20px; font-weight: bold; margin-bottom: 10px; padding: 10px; border:1px solid black;">
-          Umgebungslicht =
+      <div id="divBright" style="float: left; width: 90%; font-size: 20px; font-weight: bold; margin-bottom: 10px; padding: 10px; border:1px solid black;">
+          <label id="brightness" style="margin-right: 20px;">Umgebungslicht =</label>
+          <input type="checkbox" id="autoBrightON" onchange="sendAutoBright();"></input>
+          <label for="autoBrightON" style="margin-right: 20px;">automatische Helligkeit</label>
+          <label for="upperLimit">max. Helligkeit</label>
+          <input type="number" id="upperLimit" min="0" max="350" style="font-size: 20px; margin-right: 20px; width: 70px;" onchange="sendBrightUpper();"></input>
+          <label for="lowerLimit">min. Helligkeit</label>
+          <input type="number" id="lowerLimit" min="0" max="350" style="font-size: 20px; width: 70px;" onchange="sendBrightLower();"></input>
       </div>
       <div style="float: left; width: 90%; font-size: 20px; font-weight: bold; margin-bottom: 10px; padding: 10px; border:1px solid black;">
           <a>Animations Modus:</a>
           <input type="radio" id="mode0" name="animode" onclick="handleModeClick(this);" value="0">
-          <label for="mode0"> ohne</label>
+          <label for="mode0" style="margin-right: 20px;"> ohne</label>
           <input type="radio" id="mode1" name="animode" onclick="handleModeClick(this);" value="1">
-          <label for="mode1"> alle 5 Minuten</label>
+          <label for="mode1" style="margin-right: 20px;"> alle 5 Minuten</label>
           <input type="radio" id="mode2" name="animode" onclick="handleModeClick(this);" value="2">
-          <label for="mode2"> alle 15 Minuten</label>
+          <label for="mode2" style="margin-right: 20px;"> alle 15 Minuten</label>
           <input type="radio" id="mode3" name="animode" onclick="handleModeClick(this);" value="3">
           <label for="mode2"> jede Stunde</label>
       </div>
       <div id="off-time" style="float: left; width: 90%; font-size: 20px; font-weight: bold; margin-bottom: 10px; padding: 10px; border:1px solid black;">
-           <a>Uhr aus von </a> <input type="time" id="off_time_begin" onchange="sendOFFtime();"> <a> bis </a> <input type="time" id="off_time_end" onchange="sendOFFtime();">
+           <a>Uhr aus von </a> <input type="time" id="off_time_begin" style="font-size: 20px;" onchange="sendOFFtime();"> <a> bis </a> <input type="time" id="off_time_end" style="font-size: 20px;" onchange="sendOFFtime();">
       </div>
       <div style="margin-top: 20px; min-height: 40px; float: left; width: 100%;">
         <button class="Button" onclick="sendSaveSettings();"> Default Farbe speichern </button>
@@ -227,6 +246,7 @@ const char MAIN_page[] PROGMEM = R"=====(
       var connection = new WebSocket('ws://'+location.hostname+':81/', ['arduino']);
       var versionnumber = ""; 
       var brightness = "";
+      var rgb = 0;
       connection.onopen = function () {
         connection.send('Connect ' + new Date());
       }
@@ -236,10 +256,11 @@ const char MAIN_page[] PROGMEM = R"=====(
       connection.onmessage = function (e) {
         console.log('Server: ', e.data);
         if (e.data[0] == '#') {
-          var rgb = parseInt(e.data.substring(1), 16);
-          document.getElementById('sliderR').value=((rgb >> 16) & 0xFF);
-          document.getElementById('sliderG').value=((rgb >> 8) & 0xFF);
-          document.getElementById('sliderB').value=((rgb >> 0) & 0xFF);
+          rgb = parseInt(e.data.substring(1), 16);
+          document.getElementById('sliderR').value=((rgb >> 24) & 0xFF);
+          document.getElementById('sliderG').value=((rgb >> 16) & 0xFF);
+          document.getElementById('sliderB').value=((rgb >> 8) & 0xFF);
+          document.getElementById('sliderBright').value=((rgb >> 0) & 0xFF);
           document.getElementById('colorbox').style.background=e.data;
         }
         if (e.data[0] == '~') {
@@ -261,12 +282,39 @@ const char MAIN_page[] PROGMEM = R"=====(
         if (strncmp(e.data, "brightness=", 11) == 0) {
           brightness = e.data.substring(11);
           document.getElementById('brightness').innerHTML = "Umgebungslicht = " + brightness;
+          if (parseInt(brightness, 10) > 10) {
+            document.getElementById('divBright').style.visibility = "visible";
+          } else {
+            document.getElementById('divBright').style.visibility = "hidden";
+          }
+        }
+        if (strncmp(e.data, "actbrightness=", 14) == 0) {
+          var actbrightness = parseInt(e.data.substring(14), 10);
+          document.getElementById('sliderBright').value=actbrightness;
         }
         if (strncmp(e.data, "OFFtime=", 8) == 0) {
           var OFFbegin = e.data.substring(8,13);
           var OFFend = e.data.substring(14,19);
           document.getElementById('off_time_begin').value = OFFbegin;
           document.getElementById('off_time_end').value = OFFend;
+        }
+        if (strncmp(e.data, "BrightLower=", 12) == 0) {
+          var lower = e.data.substring(12);
+          document.getElementById('lowerLimit').value = lower;
+        }
+        if (strncmp(e.data, "BrightUpper=", 12) == 0) {
+          var upper = e.data.substring(12);
+          document.getElementById('upperLimit').value = upper;
+        }
+        if (strncmp(e.data, "AutoBright=", 11) == 0) {
+          var autoBright = parseInt(e.data.substring(11),10);
+          document.getElementById('autoBrightON').checked = autoBright;
+          if (autoBright === 1)
+            document.getElementById('sliderBright').disabled = true;
+          else {
+            document.getElementById('sliderBright').disabled = false;
+            document.getElementById('sliderBright').value=((rgb >> 0) & 0xFF);
+          }
         }
       }
 
@@ -283,11 +331,39 @@ const char MAIN_page[] PROGMEM = R"=====(
         console.log(OFFtime);
         connection.send(OFFtime);
       }
-    
+
+      function sendBrightUpper() {
+        var upper = document.getElementById('upperLimit').value;
+        var limit = 'BrightUpper=' + upper;
+        console.log(limit);
+        connection.send(limit);
+      }
+
+      function sendBrightLower() {
+        var lower = document.getElementById('lowerLimit').value;
+        var limit = 'BrightLower=' + lower;
+        console.log(limit);
+        connection.send(limit);
+      }
+
+      function sendAutoBright() {
+        var autobright = document.getElementById('autoBrightON').checked ? 1 : 0;
+        var command = 'AutoBright=' + autobright;
+        if (autobright === 1)
+          document.getElementById('sliderBright').disabled = true;
+        else {
+          document.getElementById('sliderBright').disabled = false;
+          document.getElementById('sliderBright').value=((rgb >> 0) & 0xFF);
+        }
+        console.log(command);
+        connection.send(command);
+      }
+      
       function sendRGB() {
         var r = parseInt(document.getElementById('sliderR').value).toString(16);
         var g = parseInt(document.getElementById('sliderG').value).toString(16);
         var b = parseInt(document.getElementById('sliderB').value).toString(16);
+        var bright = parseInt(document.getElementById('sliderBright').value).toString(16);
         if(r.length < 2) {
           r = '0' + r;
         }
@@ -297,11 +373,16 @@ const char MAIN_page[] PROGMEM = R"=====(
         if(b.length < 2) {
           b = '0' + b;
         }
-        var rgb = '#'+r+g+b;
-        console.log('send RGB: ' + rgb);
-        document.getElementById('colorbox').style.background=rgb;
-        document.getElementById('colorbox').innerHTML = rgb;
-        connection.send(rgb);
+        if(bright.length < 2) {
+          bright = '0' + bright;
+        }
+        var sRGB = '#'+r+g+b;
+        document.getElementById('colorbox').style.background=sRGB;
+        sRGB = sRGB + bright;
+        document.getElementById('colorbox').innerHTML = sRGB;
+        console.log('send RGB: ' + sRGB);
+        rgb = parseInt(sRGB.substring(1), 16);
+        connection.send(sRGB);
       }
     
       function setColor(color) {

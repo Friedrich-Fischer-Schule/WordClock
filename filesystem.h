@@ -56,6 +56,15 @@ bool readConfigFile() {
       brightness = json["brightness"];
     }
 
+    if (json.containsKey("autoDimm")) {
+      autoDimm = (bool) json["autoDimm"];
+    }
+
+    if (json.containsKey("BrightUpper")) {
+      BrightUpper = json["BrightUpper"];
+      BrightLower = json["BrightLower"];
+    }
+    
     if (json.containsKey("OFFtime_begin")) {
       strcpy(OFFtime_begin, json["OFFtime_begin"]);
       strcpy(OFFtime_end, json["OFFtime_end"]);
@@ -90,6 +99,9 @@ bool writeConfigFile() {
   json["colorG"] = colorG;
   json["colorB"] = colorB;
   json["brightness"] = brightness;
+  json["BrightUpper"] = BrightUpper;
+  json["BrightLower"] = BrightLower;
+  json["autoDimm"] = autoDimm;
 
   json["OFFtime_begin"] = OFFtime_begin;
   json["OFFtime_end"] = OFFtime_end;

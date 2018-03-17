@@ -17,9 +17,15 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
         // send message to client
         webSocket.sendTXT(num, "Connected");
         char dataString[20] = {0};
-        sprintf(dataString,"#%02X%02X%02X",colorR,colorG,colorB);
+        sprintf(dataString,"#%02X%02X%02X%02X", colorR, colorG, colorB, brightness);
         webSocket.sendTXT(num, dataString);
-        sprintf(dataString,"OFFtime=%s-%s",OFFtime_begin,OFFtime_end);
+        sprintf(dataString,"BrightUpper=%i", BrightUpper);
+        webSocket.sendTXT(num, dataString);        
+        sprintf(dataString,"BrightLower=%i", BrightLower);
+        webSocket.sendTXT(num, dataString); 
+        sprintf(dataString,"AutoBright=%i", autoDimm);
+        webSocket.sendTXT(num, dataString);        
+        sprintf(dataString,"OFFtime=%s-%s", OFFtime_begin, OFFtime_end);
         webSocket.sendTXT(num, dataString);
         sprintf(dataString,"version=%s", SKETCH_VERSION);
         webSocket.broadcastTXT(dataString);
@@ -37,11 +43,12 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
       if (payload[0] == '#') {
         // we get RGB data
         // decode rgb data
-        uint32_t rgb = (uint32_t) strtol((const char *) &payload[1], NULL, 16);
+        uint32_t rgb = (uint32_t) strtoul((const char *) &payload[1], NULL, 16);
 
-        colorR = ((rgb >> 16) & 0xFF);
-        colorG = ((rgb >> 8) & 0xFF);
-        colorB = ((rgb >> 0) & 0xFF);
+        colorR = ((rgb >> 24) & 0xFF);
+        colorG = ((rgb >> 16) & 0xFF);
+        colorB = ((rgb >> 8) & 0xFF);
+        brightness = ((rgb >> 0) & 0xFF);
         DBG_OUTPUT.printf("WS: received RGB data R=%i G=%i B=%i\n", colorR, colorG, colorB);
         //webSocket.sendTXT(num, "OK");
         for(uint8_t i = 0; i < WEBSOCKETS_SERVER_CLIENT_MAX; i++) {
@@ -49,6 +56,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
             webSocket.sendTXT(i, payload);
           }
         }
+        strip.setBrightness(brightness);
         uhrdisp();
       }
 
@@ -95,6 +103,75 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
         }
       }
 
+      // BrightnessLimits ==> save the min max brightness levels.
+      if (strncmp((char*)payload, "BrightUpper=", 12) == 0) {
+        BrightUpper = (uint16_t) strtol((const char *) &payload[12], NULL, 10);
+        if (autoDimm) {
+          if(BrightUpper == BrightLower){
+            BrightUpper += 1;
+          }
+          strip.setBrightness(constrain(map(iRoomBrightness, BrightLower, BrightUpper, 255, 30), 0, 255));
+          DBG_OUTPUT.println("autoDimm");
+        } else {
+          strip.setBrightness(brightness);
+          DBG_OUTPUT.println("manDimm");
+        }
+        strip.show();
+        DBG_OUTPUT.printf("WS: received BrightUpper command %s\n", payload);
+        writeConfigFile();
+        webSocket.sendTXT(num, "OK");
+        for(uint8_t i = 0; i < WEBSOCKETS_SERVER_CLIENT_MAX; i++) {
+          if(i != num) {
+            webSocket.sendTXT(i, payload);
+          }
+        }
+      }
+      if (strncmp((char*)payload, "BrightLower=", 12) == 0) {
+        BrightLower = (uint16_t) strtol((const char *) &payload[12], NULL, 10);
+        if (autoDimm) {
+          if(BrightUpper == BrightLower){
+            BrightUpper += 1;
+          }
+          strip.setBrightness(constrain(map(iRoomBrightness, BrightLower, BrightUpper, 255, 30), 0, 255));
+          DBG_OUTPUT.println("autoDimm");
+        } else {
+          strip.setBrightness(brightness);
+          DBG_OUTPUT.println("manDimm");
+        }
+        strip.show();
+        DBG_OUTPUT.printf("WS: received BrightLower command %s\n", payload);
+        writeConfigFile();
+        webSocket.sendTXT(num, "OK");
+        for(uint8_t i = 0; i < WEBSOCKETS_SERVER_CLIENT_MAX; i++) {
+          if(i != num) {
+            webSocket.sendTXT(i, payload);
+          }
+        }
+      }
+
+      if (strncmp((char*)payload, "AutoBright=", 11) == 0) {
+        autoDimm = (uint16_t) strtol((const char *) &payload[11], NULL, 10);
+        if (autoDimm) {
+          if(BrightUpper == BrightLower){
+            BrightUpper += 1;
+          }
+          strip.setBrightness(constrain(map(iRoomBrightness, BrightLower, BrightUpper, 255, 30), 0, 255));
+          DBG_OUTPUT.println("autoDimm");
+        } else {
+          strip.setBrightness(brightness);
+          DBG_OUTPUT.println("manDimm");
+        }
+        strip.show();
+        DBG_OUTPUT.printf("WS: received AutoBright command %s\n", payload);
+        writeConfigFile();
+        webSocket.sendTXT(num, "OK");
+        for(uint8_t i = 0; i < WEBSOCKETS_SERVER_CLIENT_MAX; i++) {
+          if(i != num) {
+            webSocket.sendTXT(i, payload);
+          }
+        }
+      }
+      
       // testLED ==> test all LEDs with rainbow theme.
       if (strncmp((char*)payload, "testLED", 7) == 0) {
         DBG_OUTPUT.printf("WS: received testLED command\n");

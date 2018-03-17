@@ -6,6 +6,10 @@ int colorR = 30;        // ROT variable
 int colorG = 100;       // GRÜN
 int colorB = 155;       // BLAU 
 int brightness = 192;   // Global variable for storing the brightness (255 == 100%)
+bool autoDimm = 0;
+int BrightLower = 200;
+int BrightUpper = 320;
+int iRoomBrightness = 0;
 char OFFtime_begin[6] = "00:00";
 char OFFtime_end[6] = "00:00";
 

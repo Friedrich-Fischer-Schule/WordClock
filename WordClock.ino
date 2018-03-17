@@ -79,12 +79,21 @@ void loop() {
     sprintf(sTime,"time=%02i:%02i:%02i", hour(), minute(), second());
     webSocket.broadcastTXT(sTime);
 
-    int iRoomBrightness = analogRead(iLightsensorPin);
+    iRoomBrightness = analogRead(iLightsensorPin);
     char sRoomBrightness[16] = {0};
     sprintf(sRoomBrightness,"brightness=%04i", iRoomBrightness);
     webSocket.broadcastTXT(sRoomBrightness);
-    DBG_OUTPUT.printf("Lightsensor = %u", iRoomBrightness);
-    DBG_OUTPUT.println("");
+
+    if (autoDimm) {
+      if(BrightUpper == BrightLower){
+        BrightUpper += 1;
+      }
+      char sBrightness[16] = {0};
+      sprintf(sBrightness,"actbrightness=%i", constrain(map(iRoomBrightness, BrightLower, BrightUpper, 255, 30), 0, 255));
+      webSocket.broadcastTXT(sBrightness);
+      DBG_OUTPUT.printf("Lightsensor = %u BrightUpper = %u BrightLower = %u", iRoomBrightness, BrightUpper, BrightLower);
+      DBG_OUTPUT.println("");
+    }
   }
   
   if (minute() != lastMinute) {
@@ -92,9 +101,21 @@ void loop() {
     char sTime[14] = {0};
     sprintf(sTime,"time=%02i:%02i:%02i", hour(), minute(), second());
     DBG_OUTPUT.println(sTime);
-    
+
     if (!testDisplayOFFtime()) {
       DBG_OUTPUT.println("Display ON");
+
+      if (autoDimm) {
+        if(BrightUpper == BrightLower){
+          BrightUpper += 1;
+        }
+        strip.setBrightness(constrain(map(iRoomBrightness, BrightLower, BrightUpper, 255, 30), 0, 255));
+        DBG_OUTPUT.println("autoDimm");
+      } else {
+        strip.setBrightness(brightness);
+        DBG_OUTPUT.println("manDimm");
+      }
+ 
       if ((iMode == 1) && (minute() % 5 == 0)){
         animation();
       }
