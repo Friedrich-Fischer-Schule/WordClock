@@ -8,6 +8,9 @@ void WIFI_setup() {
   //Remove this line if you do not want to see WiFi password printed
   //WiFi.printDiag(DBG_OUTPUT);
 
+  //Remove this line to not get WiFi debug messages 
+  //DBG_OUTPUT.setDebugOutput(true);
+
   if (WiFi.SSID() == "") {
     DBG_OUTPUT.println("We haven't got any access point credentials, so get them now");
     initialConfig = true;

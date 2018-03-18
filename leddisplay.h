@@ -1,3 +1,16 @@
+uint32_t rosa = strip.Color(225, 0, 100);                 //Farben
+uint32_t lila = strip.Color(100, 0, 125);
+uint32_t grun = strip.Color(0, 150, 0);
+uint32_t skyblue = strip.Color(0, 191, 255);
+uint32_t rot = strip.Color(200, 0, 0);
+uint32_t coral = strip.Color(255, 114, 86);
+uint32_t blau = strip.Color(0, 0, 200);
+uint32_t turkis = strip.Color(0, 200, 100);
+uint32_t aus = strip.Color(0, 0, 0);
+uint32_t weis = strip.Color(100, 100, 100);
+uint32_t gelb = strip.Color(150, 150, 0);
+uint32_t orange = strip.Color(200, 50, 0);
+
 void icon_update(){
   bool icon[] = {0,0,0,1,1,1,1,1,0,0,0,
                    0,0,1,0,0,0,0,0,1,0,0,
@@ -108,17 +121,125 @@ void colorWipe(uint32_t c, uint8_t wait) {
   }
 }
 
+void Ausgehen(){                                  //Animation: alle leuchtenden LEDs gehen der Reihe nach aus
+  for(int n=0; n<117; n++){
+    if(strip.getPixelColor(n) != 0) {
+      strip.setPixelColor(n, strip.Color(0, 0, 0));
+      strip.show();
+      delay(100);
+    }
+  }
+}
+
+void TheaterChaseRainbow(uint8_t wait) {
+  for (int j=0; j < 256; j = j + 10) {     // cycle all 256 colors in the wheel
+    for (int q=0; q < 3; q++) {
+      for (uint16_t i=0; i < strip.numPixels(); i=i+3) {
+        strip.setPixelColor(i+q, Wheel( (i+j) % 255));    //turn every third pixel on
+      }
+      strip.show();
+
+      delay(wait);
+
+      for (uint16_t i=0; i < strip.numPixels(); i=i+3) {
+        strip.setPixelColor(i+q, 0);        //turn every third pixel off
+      }
+    }
+  }
+}
+
 void Schlange() {
-  colorWipe(strip.Color(255, 0, 0), d); // Red
-  colorWipe(strip.Color(0, 255, 0), d); // Green
-  colorWipe(strip.Color(0, 0, 250), d); // Blue
-  colorWipe(strip.Color(100, 44, 65), d); // rosa
-  colorWipe(strip.Color(33, 100, 100), d); // türkis
-  colorWipe(strip.Color(255, 127, 36), d); // orange
-  colorWipe(strip.Color(25, 25, 112), d); // Red
-  colorWipe(strip.Color(173, 255, 47), d); // gelb
-  colorWipe(strip.Color(153, 50, 204), d); // magenta
-  colorWipe(strip.Color(48, 255, 159), d); // minze
+  colorWipe(rosa, d); // rosa
+  //colorWipe(turkis, d); // türkis
+  colorWipe(orange, d); // orange
+}
+
+void Meeting(uint32_t farbe1, uint32_t farbe2){                //Aninmation: zwei Farben laufen zusammen, treffen sich in 
+strip.clear();
+  for (int b=0; b<=13; b++){                                   //der Mitte und laufen dann wieder auseinander
+    for(int i = 0; i <= 4; i++) {
+      if(b<=10){
+        strip.setPixelColor(b + i * 22, farbe1);
+        strip.setPixelColor(21 - b + i * 22, farbe2);
+        strip.setPixelColor(b + 11 + i * 22, farbe2);
+        strip.setPixelColor(10 - b + i * 22, farbe1);
+      }
+      if(b>=3){
+        if(b!=0){
+          strip.setPixelColor(b - 3 + i * 22, aus);
+          strip.setPixelColor(21 - b + 3 + i * 22, aus);
+          strip.setPixelColor(10 - b + 3 + i * 22, aus);
+          strip.setPixelColor(b - 3 + 11 + i * 22, aus);
+        }
+      }
+    }
+    strip.show();
+    delay(200);
+  }
+  strip.clear();
+}
+
+void Aufsammleroben(uint32_t farbe){                                      //Animation: es laufen vier Punkte von oben nach unten
+  for(int n=117; n>=-4; n=n-1){                                           //und sammeln die Anderen auf
+    if (n <= 118) {
+      strip.setPixelColor(n, farbe);
+    }
+    if (n <= 113) {
+      strip.setPixelColor(n + 4, aus);
+
+    }
+    strip.show();
+    delay(50);
+  }
+  strip.clear();
+}
+
+void Aufsammler(uint32_t farbe){                                          //Animation: es laufen vier Punkte von unten nach oben
+  for(int n=0; n<121; n++){                                               //und sammeln die Anderen auf
+    if (n <= 117) {
+      strip.setPixelColor(n, farbe);
+    }
+    if (n >= 4) {
+      strip.setPixelColor(n - 4, aus);
+
+    }
+    strip.show();
+    delay(100);
+  }
+  strip.clear();
+}
+
+void Staffellauf(uint32_t farbe1, uint32_t farbe2){
+  strip.clear();
+  for (int b=0; b<=14; b++){                              //Animationen: zwei Farben laufen entgegengesetzt von der einen auf die andere Seite
+    for(int i = 0; i <=4; i++) {
+      if(b<=10){
+        strip.setPixelColor(b + i * 22, farbe1);
+        strip.setPixelColor(b + 11 + i * 22, farbe2);
+      }
+      if(b>=4){
+        strip.setPixelColor(b-4 + i * 22, aus);
+        strip.setPixelColor(b + 11 - 4 + i * 22, aus);
+      }
+    }
+    strip.show();
+    delay(100);
+  }
+  for (int b=0; b<=14; b++){
+    for(int i = 0; i <=4; i++) {
+      if(b<=10){
+        strip.setPixelColor(b + i * 22, farbe2);
+        strip.setPixelColor(b + 11 + i * 22, farbe1);
+      }
+      if(b>=4){
+        strip.setPixelColor(b-4 + i * 22, aus);
+        strip.setPixelColor(b + 11 - 4 + i * 22, aus);
+      }
+    }
+    strip.show();
+    delay(200);
+  }
+  strip.clear();
 }
 
 void KNIGHT() {
@@ -135,7 +256,7 @@ void KNIGHT() {
       strip.setPixelColor(t + z * 11, strip.Color( colorR, colorG, colorB));
 
     strip.show();
-    delay(50);
+    delay(200);
   }
   for (int i = 10; i >= 0; i--) {
     for (int z = 0; z < 10; z++)
@@ -145,7 +266,7 @@ void KNIGHT() {
     for (int z = 0; z < 10; z++)
       strip.setPixelColor(t + z * 11, strip.Color( 0, 0, 0));
     strip.show();
-    delay(50);
+    delay(200);
   }
 }
 
@@ -661,8 +782,39 @@ void clear_disp(){
 }
 
 void animation() {
-  rainbow(20);
-  //colorWipe(d, 20);
-  //KNIGHT();
-  //Schlange();
+  int i = random(1, 11);
+  switch (i) {
+  case 1:
+    rainbow(30);
+    break;
+  case 2:
+    Schlange();
+    break;
+  case 3:
+    KNIGHT();
+    break;
+  case 4:
+    Ausgehen();
+    break;
+  case 5:
+    colorWipe(41120, 100);
+    break;
+  case 6:
+    TheaterChaseRainbow(100);
+    break;
+  case 7:
+    Meeting(gelb, lila);
+    break;
+  case 8:
+    Staffellauf(coral, skyblue);
+    break;
+  case 9:
+    Aufsammleroben(rosa);
+    break;
+  case 10:
+    Aufsammler(lila);
+    break;
+  default:
+    rainbow(30);
+  }
 }

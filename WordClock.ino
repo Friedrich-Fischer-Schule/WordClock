@@ -79,6 +79,12 @@ void loop() {
     sprintf(sTime,"time=%02i:%02i:%02i", hour(), minute(), second());
     webSocket.broadcastTXT(sTime);
 
+    if (bTestLedAni) {
+      bTestLedAni = false;
+      animation();
+      uhrdisp();
+    }
+    
     iRoomBrightness = analogRead(iLightsensorPin);
     char sRoomBrightness[16] = {0};
     sprintf(sRoomBrightness,"brightness=%04i", iRoomBrightness);

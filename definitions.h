@@ -13,8 +13,8 @@ int iRoomBrightness = 0;
 char OFFtime_begin[6] = "00:00";
 char OFFtime_end[6] = "00:00";
 
-#define d 50 //delay variable
-
+bool bTestLedAni = false;
+#define d 40 //delay variable
 int iMode = 0;
   // 0 = Uhr
   // 1 = Uhr + animation every 5 minutes

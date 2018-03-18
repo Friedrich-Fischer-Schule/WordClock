@@ -175,8 +175,8 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
       // testLED ==> test all LEDs with rainbow theme.
       if (strncmp((char*)payload, "testLED", 7) == 0) {
         DBG_OUTPUT.printf("WS: received testLED command\n");
-        rainbow(50);
-        uhrdisp();
+        //animation();
+        bTestLedAni = true;
         webSocket.sendTXT(num, "OK");
       }
 
