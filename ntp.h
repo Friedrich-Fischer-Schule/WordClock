@@ -31,28 +31,40 @@ byte packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming & outgoing packets
 int dstOffset (unsigned long unixTime)
 {
   //Receives unix epoch time and returns seconds of offset for local DST
-  //Second Sunday in March and First Sunday in November
+  //Last Sunday in March and Last Sunday in October
   //Code idea from doughboy @ "http://forum.arduino.cc/index.php?PHPSESSID=uoj11hu5j72556mk3gh0ba5ok3&topic=197637.0"
   //Get epoch times @ "http://www.epochconverter.com/" for testing
   //DST update wont be reflected until the next time sync
   time_t t = unixTime;
   tmElements_t te;
   te.Year = year(t)-1970;
-  te.Month = 4;
-  te.Day = 1;
+  te.Month = 3;
+  te.Day = 31;
   te.Hour = 0;
   te.Minute = 0;
   te.Second = 0;
   time_t dstStart, dstEnd, current;
   dstStart = makeTime(te);
   dstStart = previousSunday(dstStart);  //Last Sunday in March
-  dstStart += 2 * SECS_PER_HOUR;  //2AM
-  te.Month=11;
+  dstStart += 1 * SECS_PER_HOUR;  // 1AM
+  te.Month = 10;
   dstEnd = makeTime(te);
   dstEnd = previousSunday(dstEnd);  //Last Sunday in October
-  dstEnd += 3 * SECS_PER_HOUR;  //3AM
-  if (t>=dstStart && t<dstEnd) return (3600);  //Add back in one hours worth of seconds - DST in effect
-  else return (0);  //NonDST
+  dstEnd += 1 * SECS_PER_HOUR;  // 1AM
+  DBG_OUTPUT.printf("dstStart = %i.%i.%i %i:%i:%i", day(dstStart), month(dstStart), year(dstStart), hour(dstStart), minute(dstStart), second(dstStart));
+  DBG_OUTPUT.println("");
+  DBG_OUTPUT.printf("dstEnd = %i.%i.%i %i:%i:%i", day(dstEnd), month(dstEnd), year(dstEnd), hour(dstEnd), minute(dstEnd), second(dstEnd));
+  DBG_OUTPUT.println("");
+  DBG_OUTPUT.printf("dstAct = %i.%i.%i %i:%i:%i", day(t), month(t), year(t), hour(t), minute(t), second(t));
+  DBG_OUTPUT.println("");
+  if (t>=dstStart && t<dstEnd) {
+    DBG_OUTPUT.println("Summertime");
+    return (3600);  //Add back in one hours worth of seconds - DST in effect
+  }
+  else {
+    DBG_OUTPUT.println("Wintertime"); 
+    return (0);  //NonDST
+  }
 }
 
 time_t getNtpTime()
